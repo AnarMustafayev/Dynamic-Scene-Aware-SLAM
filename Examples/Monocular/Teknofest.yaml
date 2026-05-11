@@ -1,0 +1,99 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Teknofest Aerial Dataset – RGB Camera Intrinsics
+# Actual frame size: 3840 x 2160 (16:9)   FPS: 7.5
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Camera calibration (fx, fy, cx, cy)
+# Calibration was done at 4000x3000 (native sensor).
+# Actual frames are 3840x2160 = center-crop of sensor:
+#   x_offset = (4000-3840)/2 = 80 px
+#   y_offset = (3000-2160)/2 = 420 px
+# => cx_corrected = 1988.0 - 80  = 1908.0
+# => cy_corrected = 1562.2 - 420 = 1142.2
+Camera1.fx: 2792.2
+Camera1.fy: 2795.2
+Camera1.cx: 1908.0
+Camera1.cy: 1142.2
+
+# Radial distortion: k1, k2   |   Tangential: p1, p2
+Camera1.k1: 0.0798
+Camera1.k2: -0.1867
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+
+# Camera frames per second (dataset is 7.5 fps; ORB-SLAM3 requires integer,
+# actual timing is controlled by the timestamps in rgb.txt at 1/7.5 s intervals)
+Camera.fps: 8
+
+# Color order of the images (0: BGR, 1: RGB)
+Camera.RGB: 1
+
+# Full sensor resolution – actual loaded frames are 3840 × 2160 (16:9)
+Camera.width:  3840
+Camera.height: 2160
+
+# Resize frames to 1280x720 before processing
+# ORB-SLAM3 automatically rescales fx, fy, cx, cy by (1280/3840 = 0.333)
+# This reduces ORB extraction time ~9x and reduces noise in large aerial images
+Camera.newWidth:  1280
+Camera.newHeight: 720
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+# High-resolution imagery → more features; use more scale levels for aerial depth variation
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+# 2500 gives good coverage at 1280x720 for aerial texture
+ORBextractor.nFeatures: 2500
+
+# Scale factor between pyramid levels
+ORBextractor.scaleFactor: 1.2
+
+# Number of pyramid levels
+# 8 levels covers motion well at 1280x720
+ORBextractor.nLevels: 8
+
+# FAST thresholds
+# Lower values detect more corners in flat aerial ground texture
+ORBextractor.iniThFAST: 15
+ORBextractor.minThFAST: 5
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0
+
+#--------------------------------------------------------------------------------------------
+# YOLODetector Parameters (optional — comment out ModelPath to disable)
+#--------------------------------------------------------------------------------------------
+
+# Full path to exported ONNX segmentation model.
+YOLODetector.ModelPath: "/mnt/c/Users/Lenovo/Desktop/orb_slam/best.onnx"
+
+# Must match the imgsz used at ONNX export time
+YOLODetector.InputSize: 320
+
+# Detection confidence threshold (0.0 - 1.0)
+YOLODetector.ConfThreshold: 0.40
+
+# Mask binarization threshold (0.0 - 1.0)
+YOLODetector.MaskThreshold: 0.50
+# Maximum depth for map points relative to median scene depth.
+# Points beyond this factor are considered unreliable and discarded.
+# Helps on aerial scenes where top-down view causes degenerate depth estimates.
+System.thFarPoints: 30.0
