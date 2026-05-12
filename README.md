@@ -1,4 +1,4 @@
-# ORB-SLAM3 with YOLO Dynamic Object Filtering
+# ORB-SLAM3 with Dynamic Object Filtering
 
 
 > **Base system:** ORB-SLAM3 by Campos et al. (University of Zaragoza)  
