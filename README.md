@@ -118,8 +118,9 @@ pip install numpy matplotlib scipy
 ## 4. Build Instructions
 
 ```bash
+mkdir orb_slam
 # Clone or unzip the project
-cd /mnt/c/Users/Lenovo/Desktop/orb_slam
+cd /orb_slam
 
 # Build Thirdparty libraries
 cd Thirdparty/DBoW2 && mkdir build && cd build
@@ -153,7 +154,7 @@ datasets/
         └── groundtruth.txt
 ```
 
-### Teknofest Aerial Dataset
+###  Aerial Dataset
 Place raw images and GPS ground truth in:
 ```
 datasets/
@@ -182,10 +183,6 @@ python datasets/aerial/prepare_teknofest.py
 
 ### Run on Teknofest Aerial Dataset
 ```bash
-# Using the provided shell script (recommended)
-bash run_teknofest.sh
-
-# Or manually
 ./Examples/Monocular/mono_tum \
     Vocabulary/ORBvoc.txt \
     Examples/Monocular/Teknofest.yaml \
