@@ -153,20 +153,18 @@ datasets/
         ├── rgb.txt
         └── groundtruth.txt
 ```
-
+Download from https://drive.google.com/drive/folders/18_VqLBbyTubVSWAXG_CgmuJWGCx0mcBd 
 ###  Aerial Dataset
 Place raw images and GPS ground truth in:
 ```
 datasets/
 └── aerial/
     ├── images/          ← raw frames (3840×2160, 7.5 fps)
-    ├── groundtruth.txt  
+    |-- groundtruth.csv  
+    ├── groundtruth.txt ---  converted from csv  
 ```
 
-Run the preparation script once:
-```bash
-python datasets/aerial/prepare_teknofest.py
-```
+
 
 ---
 
@@ -216,14 +214,7 @@ python evaluation/visualize_results.py `
     --out results_tum.png
 ```
 
-```bash
-# WSL / Linux
-python evaluation/visualize_results.py \
-    --est KeyFrameTrajectory.txt \
-    --gt  datasets/aerial/groundtruth.txt \
-    --dataset "Teknofest Aerial" \
-    --out results_teknofest.png
-```
+
 
 ### Script Options
 
