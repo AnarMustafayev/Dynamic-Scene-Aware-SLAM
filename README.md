@@ -1,9 +1,5 @@
 # ORB-SLAM3 with Dynamic Object Filtering
 
-
-> **Base system:** ORB-SLAM3 by Campos et al. (University of Zaragoza)  
-> **Extensions:** YOLO-based dynamic object filtering · Aerial dataset support · Trajectory evaluation tooling
-
 ---
 
 ## Table of Contents
@@ -35,7 +31,7 @@ The following **modifications** were made to existing ORB-SLAM3 source files:
 - Inserted a call to `DynamicFilter::FilterFrame()` at the start of each frame's feature-processing pipeline, **before** ORB feature matching. This removes dynamic keypoints prior to tracking so they do not corrupt the map.
 
 ### `src/DynamicFilter.cc`
-- Fixed an `#include "Verbose.h"` error (the `Verbose` class is defined in `System.h`; a separate header did not exist in this build). Changed to `#include "System.h"`.
+- Three stage filter
 
 ### `Examples/Monocular/Teknofest.yaml` *(new, not a modification of existing)*
 - Created a new configuration YAML for the Teknofest aerial dataset (see [Section 5](#5-dataset-preparation)).
@@ -51,7 +47,7 @@ The following **modifications** were made to existing ORB-SLAM3 source files:
 A new class that:
 - Loads a **YOLOv11-seg** model exported to **ONNX** format.
 - Runs inference asynchronously on a background thread to avoid blocking the tracking loop.
-- Returns segmentation masks for dynamic object classes (people, vehicles, animals, etc.).
+- Returns segmentation masks for dynamic object classes (people, vehicles, etc.).
 - Supports **CPU and CUDA** execution providers via ONNX Runtime (GPU requires `libonnxruntime_providers_shared.so`).
 
 Key configuration parameters (set in YAML):
@@ -87,7 +83,7 @@ A rich trajectory evaluation and visualization tool (replaces the bare-bones `ev
 
 **Features:**
 - Umeyama alignment with scale (for monocular scale recovery)
-- **3D ATE** and **2D ATE (XY-only)** — the latter is the meaningful metric for aerial SLAM where Z is unreliable
+- **3D ATE** and **2D ATE (XY-only)**
 - ATE heatmap on the 2D trajectory plot (green = low error → red = high error)
 - ATE per-frame time-series (separate panels for 3D and 2D error)
 - Start/end markers on trajectory plots
@@ -124,19 +120,18 @@ cd /orb_slam
 
 # Build Thirdparty libraries
 cd Thirdparty/DBoW2 && mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release && make -j4
+cmake .. -DCMAKE_BUILD_TYPE=Release && make 
 cd ../../g2o && mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release && make -j4
+cmake .. -DCMAKE_BUILD_TYPE=Release && make 
 cd ../../..
 
 # Build ORB-SLAM3 (with extensions)
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j4
+make 
 cd ..
 ```
 
-> **Note:** If `libonnxruntime_providers_shared.so` is missing, YOLO will fall back to CPU automatically. The SLAM system will still function; only dynamic filtering may be slower.
 
 ---
 
@@ -178,6 +173,7 @@ datasets/
     Examples/Monocular/TUM3.yaml \
     datasets/tum/rgbd_dataset_freiburg3_walking_xyz
 ```
+Other TUM sequences can be run with the same way.
 
 ### Run on Teknofest Aerial Dataset
 ```bash
@@ -237,7 +233,6 @@ python evaluation/visualize_results.py `
 | **Mid-right — 2D ATE** | Per-frame XY-only error — the meaningful metric for aerial. |
 | **Bottom-right — Stats Card** | RMSE, Mean, Max for both 3D and 2D ATE; path lengths; scale factor. |
 
-> **Tip for aerial results:** Focus on the **2D ATE RMSE** value. The 3D RMSE is inflated by unavoidable Z oscillations inherent to monocular SLAM on top-down imagery.
 
 ---
 
@@ -254,7 +249,7 @@ cx_corrected = 1988.0 - 80  = 1908.0
 cy_corrected = 1562.2 - 420 = 1142.2
 ```
 
-These corrected values are already applied in `Examples/Monocular/Teknofest.yaml`.
+These corrected values are applied in `Examples/Monocular/Teknofest.yaml`.
 
 ORB-SLAM3 further downscales frames to **1280×720** (`Camera.newWidth/newHeight`) and divides intrinsics by the scale factor (3×) automatically:
 
